@@ -1,0 +1,177 @@
+/* Side Navigation - Following Nav.css patterns */
+.sidenav {
+  position: fixed;
+  top: 70px;  /* Start after navigation bar */
+  left: 0;
+  width: 250px;  /* Slightly wider for better proportion */
+  height: calc(100vh - 70px);  /* Full height minus nav height */
+  background-color: #333;
+  color: #fff;
+  z-index: 1000;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;  /* Enable vertical scrolling */
+  overflow-x: hidden;  /* Prevent horizontal scrolling */
+}
+
+.sidenav-content {
+  padding: 1rem;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.nav-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.nav-item {
+  width: 100%;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-item img {
+  width: 18px;
+  height: 18px;
+}
+
+.nav-item span:first-child {
+  font-size: 1.1rem;
+}
+
+.create-session-item {
+  background: rgba(76, 175, 80, 0.1);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.create-session-item:hover {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.5);
+}
+
+.logout-section {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn {
+  width: 100%;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.logout-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Adjust main content to account for sidebar */
+.main-content-area {
+  margin-left: 250px;  /* Match sidebar width */
+  margin-top: 70px;    /* Start after navigation bar */
+  height: calc(100vh - 70px);  /* Full height minus nav height */
+  overflow-y: auto;    /* Allow scrolling if content is long */
+  transition: margin-left 0.3s ease;
+}
+
+.dashboard-main {
+  padding: 2rem;
+  min-height: 100%;
+}
+
+/* Responsive - hide sidebar on mobile */
+@media (max-width: 768px) {
+  .sidenav {
+    width: 0;
+    overflow: hidden;
+    transition: width 0.3s ease;
+  }
+  
+  .main-content-area {
+    margin-left: 0;
+    margin-top: 70px;    /* Keep nav space on mobile */
+    height: calc(100vh - 70px);
+  }
+
+  /* Add hamburger menu functionality if needed */
+  .sidenav.mobile-open {
+    width: 250px;
+  }
+}
+
+/* Smooth scrolling for sidebar */
+.sidenav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidenav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.sidenav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.sidenav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Animation for nav items */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.nav-item {
+  animation: slideIn 0.3s ease-out;
+}
+
+.nav-item:nth-child(1) { animation-delay: 0.1s; }
+.nav-item:nth-child(2) { animation-delay: 0.2s; }
+.nav-item:nth-child(3) { animation-delay: 0.3s; }
+.nav-item:nth-child(4) { animation-delay: 0.4s; }
+.nav-item:nth-child(5) { animation-delay: 0.5s; }
