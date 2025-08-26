@@ -82,12 +82,13 @@ const Reports = () => {
 
   return (
     <>
-      <SideNav />
-      <div className="main-content-area">
+      <div className="app-container">
+        <SideNav userType="student" />
+        <div className="main-content-area">
         <div className="reports-container">
           <div className="reports-header">
-            <h1>📊 Attendance Reports</h1>
-            <p>Comprehensive view of your attendance history and statistics</p>
+            <h1>📊 Attendance </h1>
+            
           </div>
 
           {/* Statistics Cards */}
@@ -228,6 +229,7 @@ const Reports = () => {
               )}
             </div>
           )}
+        </div>
         </div>
       </div>
     </>

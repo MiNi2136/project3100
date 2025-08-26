@@ -70,12 +70,13 @@ const TeacherReports = () => {
 
   return (
     <>
-      <SideNav onCreateSession={() => {}} />
-      <div className="main-content-area">
+      <div className="app-container">
+        <SideNav onCreateSession={() => {}} userType="teacher" />
+        <div className="main-content-area">
         <div className="teacher-reports-container">
           <div className="reports-header">
             <h1>📈 Teaching Reports & Analytics</h1>
-            <p>Comprehensive attendance analytics for all your sessions</p>
+           
           </div>
 
           {/* Overall Statistics */}
@@ -268,6 +269,7 @@ const TeacherReports = () => {
               )}
             </div>
           )}
+        </div>
         </div>
       </div>
     </>

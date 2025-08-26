@@ -85,9 +85,10 @@ const TeacherDashboard = () => {
 
   return (
     <>
-      <SideNav onCreateSession={togglePopup} userType="teacher" />
-      <div className="main-content-area">
-        <div className="dashboard-main">
+      <div className="app-container">
+        <SideNav onCreateSession={togglePopup} userType="teacher" />
+        <div className="main-content-area">
+          <div className="dashboard-main">
           
           {/* Dashboard Overview */}
           <div className="teacher-overview">
@@ -259,7 +260,8 @@ const TeacherDashboard = () => {
             )}
           </div>
         </div>
-      </div>
+          </div>
+        </div>
       
       {isSessionDisplay && (
         <div className="popup-overlay">

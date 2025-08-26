@@ -136,9 +136,10 @@ const Dashboard = () => {
 
   return (
     <>
-      <SideNav userType="student" />
-      <div className="main-content-area">
-        <div className="dashboard-main">
+      <div className="app-container">
+        <SideNav userType="student" />
+        <div className="main-content-area">
+          <div className="dashboard-main">
           {!isSessionDisplay && (
             <>
               {/* Current Running Sessions */}
@@ -277,8 +278,9 @@ const Dashboard = () => {
           <StudentForm togglePopup={toggleStudentForm} />
         </div>
       )}
-    </div>
-    </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

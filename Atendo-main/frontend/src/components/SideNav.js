@@ -1,11 +1,17 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/SideNav.css";
 import logout from "../assets/logout.png";
 import home from "../assets/home.png";
 
 const SideNav = ({ onCreateSession, userType = "student" }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Helper function to check if current route is active
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   const handleLogout = () => {
     navigate("/logout");
@@ -39,31 +45,46 @@ const SideNav = ({ onCreateSession, userType = "student" }) => {
     <div className="sidenav">
       <div className="sidenav-content">
         <div className="nav-items">
-          <button onClick={handleDashboard} className="nav-item">
+          <button 
+            onClick={handleDashboard} 
+            className={`nav-item ${isActive(userType === "teacher" ? "/teacher-dashboard" : "/student-dashboard") ? "active" : ""}`}
+          >
             <img src={home} alt="Dashboard" />
             <span>Dashboard</span>
           </button>
           
-          <button onClick={handleProfile} className="nav-item">
+          <button 
+            onClick={handleProfile} 
+            className={`nav-item ${isActive("/profile") ? "active" : ""}`}
+          >
             <span>👤</span>
-            <span>Profile</span>
+            <span>Performance</span>
           </button>
 
           {userType === "teacher" && (
-            <button onClick={handleCreateSession} className="nav-item create-session-item">
+            <button 
+              onClick={handleCreateSession} 
+              className="nav-item create-session-item"
+            >
               <span>➕</span>
               <span>Create Session</span>
             </button>
           )}
 
-          <button onClick={handleSessions} className="nav-item">
+          <button 
+            onClick={handleSessions} 
+            className={`nav-item ${isActive("/sessions") ? "active" : ""}`}
+          >
             <span>📊</span>
-            <span>Sessions</span>
+            <span>Report</span>
           </button>
 
-          <button onClick={handleReports} className="nav-item">
+          <button 
+            onClick={handleReports} 
+            className={`nav-item ${isActive(userType === "teacher" ? "/teacher-reports" : "/reports") ? "active" : ""}`}
+          >
             <span>📈</span>
-            <span>Reports</span>
+            <span>Attendance</span>
           </button>
 
           <button className="nav-item">
