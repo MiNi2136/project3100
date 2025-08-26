@@ -33,11 +33,17 @@ router.post(
   JWT.verifyToken,
   SessionController.GetCurrentSessions
 );
-//get current running sessions
+//get performance data
 router.post(
-  "/getCurrentSessions",
+  "/getPerformanceData",
   JWT.verifyToken,
-  SessionController.GetCurrentSessions
+  SessionController.GetPerformanceData
+);
+//save CT marks
+router.post(
+  "/saveCTMarks",
+  JWT.verifyToken,
+  SessionController.SaveCTMarks
 );
 
 export default router;

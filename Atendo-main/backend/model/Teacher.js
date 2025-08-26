@@ -26,6 +26,7 @@ const userSchema = new schema(
             student_email: { type: String, required: true },
             Location: { type: String, required: true },
             distance: { type: String, required: true },
+            ct_marks: { type: Object, default: {} }, // Store CT marks as object
           },
         ],
       },

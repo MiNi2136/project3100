@@ -215,6 +215,148 @@ async function GetCurrentSessions(req, res) {
   }
 }
 
+//get performance data for teacher (attendance with reg numbers)
+async function GetPerformanceData(req, res) {
+  let tokenData = req.user;
+  try {
+    const teacher = await Teacher.findOne({
+      email: tokenData.email,
+    });
+    
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    // Compile performance data with registration numbers
+    const performanceData = {};
+    const sessionsData = [];
+
+    teacher.sessions.forEach(session => {
+      // Add session info
+      sessionsData.push({
+        session_id: session.session_id,
+        name: session.name,
+        date: session.date,
+        time: session.time,
+        duration: session.duration,
+        location: session.location,
+        radius: session.radius,
+        attendance_count: session.attendance ? session.attendance.length : 0
+      });
+
+      if (session.attendance && session.attendance.length > 0) {
+        session.attendance.forEach(attendance => {
+          const studentKey = attendance.regno || attendance.student_email;
+          
+          if (!performanceData[studentKey]) {
+            performanceData[studentKey] = {
+              regno: attendance.regno || 'N/A',
+              email: attendance.student_email,
+              attendance_records: [],
+              total_sessions_attended: 0,
+              total_sessions_on_time: 0,
+              ct_marks: attendance.ct_marks || {} // Include CT marks
+            };
+          }
+          
+          const isOnTime = parseFloat(attendance.distance) <= parseFloat(session.radius);
+          
+          performanceData[studentKey].attendance_records.push({
+            session_id: session.session_id,
+            session_name: session.name,
+            date: session.date,
+            time: session.time,
+            distance: attendance.distance,
+            image: attendance.image,
+            status: isOnTime ? 'Present' : 'Late',
+            is_on_time: isOnTime
+          });
+          
+          performanceData[studentKey].total_sessions_attended += 1;
+          if (isOnTime) {
+            performanceData[studentKey].total_sessions_on_time += 1;
+          }
+        });
+      }
+    });
+
+    // Convert to array and calculate percentages
+    const studentPerformanceArray = Object.keys(performanceData).map(studentKey => {
+      const student = performanceData[studentKey];
+      const totalSessions = teacher.sessions.length;
+      const attendancePercentage = totalSessions > 0 ? Math.round((student.total_sessions_attended / totalSessions) * 100) : 0;
+      const punctualityPercentage = student.total_sessions_attended > 0 ? Math.round((student.total_sessions_on_time / student.total_sessions_attended) * 100) : 0;
+      
+      return {
+        regno: student.regno,
+        email: student.email,
+        attendance_records: student.attendance_records,
+        total_sessions: totalSessions,
+        sessions_attended: student.total_sessions_attended,
+        sessions_on_time: student.total_sessions_on_time,
+        attendance_percentage: attendancePercentage,
+        punctuality_percentage: punctualityPercentage,
+        ct_marks: student.ct_marks || {} // Include CT marks
+      };
+    });
+
+    res.status(200).json({ 
+      performance_data: studentPerformanceArray,
+      sessions: sessionsData,
+      total_sessions: teacher.sessions.length,
+      total_students: studentPerformanceArray.length
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
+//save CT marks for students
+async function SaveCTMarks(req, res) {
+  let tokenData = req.user;
+  let { ct_marks_data } = req.body;
+
+  try {
+    const teacher = await Teacher.findOne({
+      email: tokenData.email,
+    });
+    
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    // Update CT marks for each student in each session they attended
+    teacher.sessions.forEach(session => {
+      if (session.attendance && session.attendance.length > 0) {
+        session.attendance.forEach(attendance => {
+          // Find matching CT marks data by regno or email
+          const ctData = ct_marks_data.find(data => 
+            data.regno === attendance.regno || data.email === attendance.student_email
+          );
+          
+          if (ctData) {
+            attendance.ct_marks = ctData.ct_marks;
+          }
+        });
+      }
+    });
+
+    // Save updated teacher data
+    await Teacher.findOneAndUpdate(
+      { email: tokenData.email },
+      { sessions: teacher.sessions }
+    );
+
+    res.status(200).json({ 
+      message: "CT marks saved successfully",
+      updated_students: ct_marks_data.length
+    });
+
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
 const SessionController = {
   CreateNewSession,
   GetAllTeacherSessions,
@@ -222,6 +364,8 @@ const SessionController = {
   AttendSession,
   GetStudentSessions,
   GetCurrentSessions,
+  GetPerformanceData,
+  SaveCTMarks,
 };
 
 export default SessionController;

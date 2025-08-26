@@ -22,8 +22,12 @@ const SideNav = ({ onCreateSession, userType = "student" }) => {
     navigate(dashboardUrl);
   };
 
-  const handleProfile = () => {
-    navigate("/profile");
+  const handlePerformance = () => {
+    if (userType === "teacher") {
+      navigate("/performance");
+    } else {
+      navigate("/student-performance");
+    }
   };
 
   const handleCreateSession = () => {
@@ -54,8 +58,8 @@ const SideNav = ({ onCreateSession, userType = "student" }) => {
           </button>
           
           <button 
-            onClick={handleProfile} 
-            className={`nav-item ${isActive("/profile") ? "active" : ""}`}
+            onClick={handlePerformance} 
+            className={`nav-item ${isActive(userType === "teacher" ? "/performance" : "/student-performance") ? "active" : ""}`}
           >
             <span>👤</span>
             <span>Performance</span>

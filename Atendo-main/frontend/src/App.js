@@ -14,6 +14,7 @@ import {
 } from "./pages/Index";
 import Reports from "./pages/Reports";
 import TeacherReports from "./pages/TeacherReports";
+import Performance from "./pages/Performance";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: "teacher-reports", 
         element: <TeacherReports />,
+      },
+      {
+        path: "performance",
+        element: <Performance />,
       },
       {
         path: "forgot-password",
