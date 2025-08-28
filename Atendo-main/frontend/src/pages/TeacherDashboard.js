@@ -101,7 +101,7 @@ const TeacherDashboard = () => {
           <div className="teacher-overview">
             <div className="overview-header">
               <h1>👨‍🏫 Teacher Dashboard</h1>
-              <p>Manage your sessions and track student attendance</p>
+             
             </div>
             
             {/* Statistics Cards */}

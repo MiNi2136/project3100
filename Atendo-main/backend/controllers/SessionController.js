@@ -98,66 +98,119 @@ async function GetQR(req, res) {
 
 //attend session
 async function AttendSession(req, res) {
-  let tokenData = req.user;
-  let { session_id, teacher_email, regno, IP, student_email, Location, date } =
-    req.body;
-  let imageName = req.file.filename;
-
+  console.log("AttendSession API called");
+  console.log("Request body:", req.body);
+  console.log("Request file:", req.file);
+  console.log("User from token:", req.user);
+  
   try {
-    let present = false;
-    const teacher = await Teacher.findOne({ email: teacher_email });
-    let session_details = {};
-    teacher.sessions.map(async (session) => {
-      if (session.session_id === session_id) {
-        let distance = checkStudentDistance(Location, session.location);
-        session.attendance.map((student) => {
-          if (
-            student.regno === regno ||
-            student.student_email === student_email
-          ) {
-            present = true;
-          }
-        });
-        if (!present) {
-          res.status(200).json({ message: "Attendance marked successfully" });
-          await uploadImage(imageName).then((result) => {
-            session_details = {
-              session_id: session.session_id,
-              teacher_email: teacher.email,
-              name: session.name,
-              date: session.date,
-              time: session.time,
-              duration: session.duration,
-              distance: distance,
-              radius: session.radius,
-              image: result,
-            };
-            session.attendance.push({
-              regno,
-              image: result,
-              date,
-              IP,
-              student_email: tokenData.email,
-              Location,
-              distance,
-            });
-          });
-          await Teacher.findOneAndUpdate(
-            { email: teacher_email },
-            { sessions: teacher.sessions }
-          );
-          await Student.findOneAndUpdate(
-            { email: student_email },
-            { $push: { sessions: session_details } }
-          );
-        }
-      }
+    const tokenData = req.user;
+    const { session_id, teacher_email, regno, IP, Location, date } = req.body;
+    
+    console.log("Parsed data:", {
+      session_id,
+      teacher_email,
+      regno,
+      IP,
+      Location,
+      date,
+      tokenData_email: tokenData?.email
     });
-    if (present) {
-      res.status(200).json({ message: "Attendance already marked" });
+    
+    if (!req.file) {
+      console.error("No file uploaded");
+      return res.status(400).json({ message: "Image is required for attendance" });
     }
+    
+    const imageName = req.file.filename;
+    console.log("Image uploaded:", imageName);
+    
+    const teacher = await Teacher.findOne({ email: teacher_email });
+    if (!teacher) {
+      console.error("Teacher not found:", teacher_email);
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+    console.log("Teacher found:", teacher.name);
+
+    // Find the specific session
+    let targetSession = null;
+    for (let session of teacher.sessions) {
+      if (session.session_id === session_id) {
+        targetSession = session;
+        break;
+      }
+    }
+
+    if (!targetSession) {
+      console.error("Session not found:", session_id, "Available sessions:", teacher.sessions.map(s => s.session_id));
+      return res.status(404).json({ message: "Session not found" });
+    }
+    
+    console.log("Target session found:", targetSession.name);
+
+    // Check if student already marked attendance
+    let alreadyPresent = false;
+    for (let student of targetSession.attendance) {
+      if (student.regno === regno || student.student_email === tokenData.email) {
+        alreadyPresent = true;
+        break;
+      }
+    }
+
+    if (alreadyPresent) {
+      console.log("Student already marked attendance:", regno, tokenData.email);
+      return res.status(200).json({ message: "Attendance already marked" });
+    }
+    
+    console.log("Marking attendance for:", regno, tokenData.email);
+
+    // Calculate distance
+    const distance = checkStudentDistance(Location, targetSession.location);
+
+    // Upload image and mark attendance
+    const imageResult = await uploadImage(imageName);
+    
+    const session_details = {
+      session_id: targetSession.session_id,
+      teacher_email: teacher.email,
+      name: targetSession.name,
+      date: targetSession.date,
+      time: targetSession.time,
+      duration: targetSession.duration,
+      distance: distance,
+      radius: targetSession.radius,
+      image: imageResult,
+    };
+
+    // Add attendance record to session
+    targetSession.attendance.push({
+      regno,
+      image: imageResult,
+      date,
+      IP,
+      student_email: tokenData.email,
+      Location,
+      distance,
+    });
+
+    // Update teacher's sessions
+    await Teacher.findOneAndUpdate(
+      { email: teacher_email },
+      { sessions: teacher.sessions }
+    );
+
+    // Update student's sessions
+    await Student.findOneAndUpdate(
+      { email: tokenData.email },
+      { $push: { sessions: session_details } }
+    );
+
+    console.log("Attendance marked successfully");
+    res.status(200).json({ message: "Attendance marked successfully" });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error("AttendSession error:", err);
+    console.error("Error stack:", err.stack);
+    res.status(500).json({ message: "Server error: " + err.message });
   }
 }
 
@@ -214,9 +267,10 @@ async function GetTeacherAttendanceReports(req, res) {
   }
 }
 
-//get current running sessions (sessions created today and still active)
+//get current running sessions (sessions created today and currently active based on time and duration)
 async function GetCurrentSessions(req, res) {
   try {
+    const now = new Date();
     const today = new Date();
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
@@ -235,16 +289,73 @@ async function GetCurrentSessions(req, res) {
       teacher.sessions.forEach(session => {
         const sessionDate = new Date(session.date);
         if (sessionDate >= startOfDay && sessionDate < endOfDay) {
-          currentSessions.push({
-            session_id: session.session_id,
-            name: session.name,
-            date: session.date,
-            time: session.time,
-            location: session.location,
-            teacher_name: teacher.name,
-            teacher_email: teacher.email,
-            qr_code: getQR(session.session_id, teacher.email)
-          });
+          // Check if session is currently running based on time and duration
+          const currentTime = now.getHours() * 60 + now.getMinutes(); // Current time in minutes
+          
+          // Parse session start time (assuming format like "14:30" or "2:30 PM")
+          let sessionStartMinutes = 0;
+          try {
+            if (session.time.includes(':')) {
+              const timeParts = session.time.toLowerCase().split(':');
+              let hours = parseInt(timeParts[0]);
+              let minutes = parseInt(timeParts[1]);
+              
+              // Handle 12-hour format with AM/PM
+              if (session.time.toLowerCase().includes('pm') && hours !== 12) {
+                hours += 12;
+              } else if (session.time.toLowerCase().includes('am') && hours === 12) {
+                hours = 0;
+              }
+              
+              sessionStartMinutes = hours * 60 + minutes;
+            }
+          } catch (error) {
+            console.log("Error parsing session time:", session.time);
+            return; // Skip this session if time parsing fails
+          }
+          
+          // Parse duration (assuming format like "60 min" or "1.5 hours")
+          let durationMinutes = 60; // default duration
+          try {
+            if (session.duration) {
+              const durationStr = session.duration.toLowerCase();
+              if (durationStr.includes('hour')) {
+                const hours = parseFloat(durationStr.replace(/[^0-9.]/g, ''));
+                durationMinutes = hours * 60;
+              } else if (durationStr.includes('min')) {
+                durationMinutes = parseInt(durationStr.replace(/[^0-9]/g, ''));
+              } else {
+                // Assume it's just a number representing minutes
+                durationMinutes = parseInt(session.duration) || 60;
+              }
+            }
+          } catch (error) {
+            console.log("Error parsing duration:", session.duration);
+            durationMinutes = 60; // fallback to 1 hour
+          }
+          
+          const sessionEndMinutes = sessionStartMinutes + durationMinutes;
+          
+          // Check if current time is within session time range
+          // Also add a buffer (15 minutes before start for early arrivals)
+          const bufferMinutes = 15;
+          const sessionStartWithBuffer = sessionStartMinutes - bufferMinutes;
+          
+          if (currentTime >= sessionStartWithBuffer && currentTime <= sessionEndMinutes) {
+            currentSessions.push({
+              session_id: session.session_id,
+              name: session.name,
+              date: session.date,
+              time: session.time,
+              duration: session.duration,
+              location: session.location,
+              teacher_name: teacher.name,
+              teacher_email: teacher.email,
+              qr_code: getQR(session.session_id, teacher.email),
+              radius: session.radius,
+              status: currentTime >= sessionStartMinutes ? 'active' : 'starting_soon'
+            });
+          }
         }
       });
     });

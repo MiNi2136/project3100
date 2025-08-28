@@ -140,6 +140,33 @@
   align-items: center;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   transition: transform 0.2s;
+  position: relative;
+  border-left: 4px solid #27ae60;
+}
+
+.current-session-card.starting_soon {
+  border-left-color: #f39c12;
+}
+
+.current-session-card.active {
+  border-left-color: #27ae60;
+}
+
+.session-status-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #27ae60;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7em;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.current-session-card.starting_soon .session-status-badge {
+  background: #f39c12;
 }
 
 .current-session-card:hover {

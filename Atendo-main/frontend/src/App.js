@@ -16,6 +16,7 @@ import Reports from "./pages/Reports";
 import TeacherReports from "./pages/TeacherReports";
 import TeacherDataSheetReports from "./pages/TeacherDataSheetReports";
 import Performance from "./pages/Performance";
+import Settings from "./pages/Settings";
 
 const router = createBrowserRouter([
   {
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
       {
         path: "performance",
         element: <Performance />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
       },
       {
         path: "forgot-password",

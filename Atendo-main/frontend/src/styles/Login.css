@@ -191,3 +191,127 @@ form button[type="submit"] {
 .login-bottom-p a:hover {
   text-decoration: underline;
 }
+
+/* Mobile Responsive Design */
+@media screen and (max-width: 768px) {
+  .login-main {
+    flex-direction: column;
+    height: auto;
+    overflow-y: visible;
+  }
+
+  .login-left {
+    margin-top: 20px;
+    margin-left: 0;
+    height: auto;
+    padding: 20px;
+    order: 2;
+  }
+
+  .login-left img {
+    width: 250px;
+    max-width: 80%;
+  }
+
+  .login-right {
+    height: auto;
+    min-height: 100vh;
+    order: 1;
+    padding: 20px;
+  }
+
+  .login-right-container {
+    width: 95%;
+    height: auto;
+    padding: 20px 0;
+  }
+
+  .login-center h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .login-center p {
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+
+  form input[type="email"],
+  form input[type="password"],
+  form input[type="text"] {
+    padding: 14px;
+    margin-bottom: 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  form button[type="submit"] {
+    padding: 14px;
+    font-size: 16px;
+  }
+
+  .login-center-buttons {
+    margin-top: 30px;
+  }
+
+  .login-center-options {
+    flex-direction: column;
+    row-gap: 15px;
+    align-items: center;
+  }
+
+  .remember-div {
+    justify-content: center;
+  }
+
+  .remember-div label {
+    font-size: 14px;
+  }
+
+  .forgot-pass-link {
+    font-size: 14px;
+  }
+
+  .login-bottom-p {
+    font-size: 14px;
+    padding: 20px 0;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .login-right {
+    padding: 15px;
+  }
+
+  .login-right-container {
+    width: 100%;
+    padding: 15px 0;
+  }
+
+  .login-center h2 {
+    font-size: 24px;
+  }
+
+  .login-center p {
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+
+  form input[type="email"],
+  form input[type="password"],
+  form input[type="text"] {
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  form button[type="submit"] {
+    padding: 12px;
+  }
+
+  .login-left img {
+    width: 200px;
+  }
+
+  .pass-input-div button {
+    top: 12px;
+  }
+}

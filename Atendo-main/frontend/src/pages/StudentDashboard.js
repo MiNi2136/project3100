@@ -20,7 +20,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   function handleCurrentSessionScan(sessionData) {
-    // Direct scan for current running session
+    // Set session data and open scanner for current running session
+    localStorage.setItem("session_id", sessionData.session_id);
+    localStorage.setItem("teacher_email", sessionData.teacher_email);
     setShowQRScanner(true);
   }
 
@@ -34,6 +36,11 @@ const Dashboard = () => {
       })
       .catch((error) => {
         console.log(error);
+        if (error.response && error.response.status === 401) {
+          // Token expired or invalid, redirect to login
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
       });
   }
 
@@ -47,8 +54,14 @@ const Dashboard = () => {
       })
       .catch((error) => {
         console.log("Error fetching current sessions:", error);
-        // If API doesn't exist, we'll just show empty current sessions
-        setCurrentSessions([]);
+        if (error.response && error.response.status === 401) {
+          // Token expired or invalid, redirect to login
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          // If API doesn't exist or other error, show empty current sessions
+          setCurrentSessions([]);
+        }
       });
   }
 
@@ -187,14 +200,18 @@ const Dashboard = () => {
               {/* Current Running Sessions */}
             {currentSessions.length > 0 && (
             <div className="current-sessions">
-              <h2>📍 Current Running Sessions</h2>
+              <h2>📍 Currently Active Sessions</h2>
               <div className="current-sessions-grid">
                 {currentSessions.map((session, index) => (
-                  <div key={`current-${index}`} className="current-session-card">
+                  <div key={`current-${index}`} className={`current-session-card ${session.status || 'active'}`}>
+                    <div className="session-status-badge">
+                      {session.status === 'starting_soon' ? '🕒 Starting Soon' : '🟢 Active Now'}
+                    </div>
                     <div className="session-info">
                       <h3>{session.name}</h3>
                       <p>📅 {session.date?.split("T")[0]}</p>
                       <p>🕒 {session.time}</p>
+                      <p>⏱️ Duration: {session.duration || '60 min'}</p>
                       <p>📍 {session.location}</p>
                       <p className="teacher-name">👨‍🏫 {session.teacher_name}</p>
                     </div>
@@ -208,9 +225,9 @@ const Dashboard = () => {
                       )}
                       <button 
                         className="scan-btn"
-                        onClick={handleCurrentSessionScan}
+                        onClick={() => handleCurrentSessionScan(session)}
                       >
-                        📱 Scan & Join Session
+                        📱 Mark Attendance
                       </button>
                     </div>
                   </div>

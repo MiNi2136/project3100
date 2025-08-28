@@ -96,16 +96,120 @@ async function ForgotPassword(req, res) {
 async function EditUserDetails(req, res) {
   const { email, name, pno, dob } = req.body;
   //check if user is a student
-  let user = await Student.findOne
-    .findOneAndUpdate({ email }, { name, pno, dob })
-    .exec();
+  let user = await Student.findOneAndUpdate({ email }, { name, pno, dob }).exec();
   if (!user) {
-    user = await Teacher.findOneAndUpdate
-      .findOneAndUpdate({ email }, { name, pno, dob })
-      .exec();
+    user = await Teacher.findOneAndUpdate({ email }, { name, pno, dob }).exec();
   }
   if (user) {
     res.status(200).json({ message: "User updated" });
+  }
+}
+
+// Get user profile
+async function GetProfile(req, res) {
+  try {
+    const { token } = req.body;
+    
+    // Verify token and get user email
+    const decoded = JWT.verifyTokenDirect(token);
+    if (!decoded) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    
+    const email = decoded.email;
+    let user = null;
+    let userType = "student";
+    
+    // Check if user is a student
+    user = await Student.findOne({ email }).select('-password');
+    if (!user) {
+      userType = "teacher";
+      user = await Teacher.findOne({ email }).select('-password');
+    }
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Add userType to user object
+    const userWithType = {
+      ...user.toObject(),
+      userType: userType
+    };
+    
+    res.status(200).json({ user: userWithType });
+  } catch (error) {
+    console.error("Error getting profile:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+// Update user profile
+async function UpdateProfile(req, res) {
+  try {
+    const { token, name, email: newEmail, password, phone, designation, department } = req.body;
+    
+    // Verify token and get user email
+    const decoded = JWT.verifyTokenDirect(token);
+    if (!decoded) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    
+    const currentEmail = decoded.email;
+    let user = null;
+    let userType = "student";
+    let updateData = {};
+    
+    // Prepare update data
+    if (name) updateData.name = name;
+    if (newEmail && newEmail !== currentEmail) updateData.email = newEmail;
+    if (password) updateData.password = password;
+    if (phone) updateData.pno = phone; // Using 'pno' as it's the field name in the models
+    
+    // Check if user is a student
+    user = await Student.findOne({ email: currentEmail });
+    if (!user) {
+      userType = "teacher";
+      user = await Teacher.findOne({ email: currentEmail });
+      
+      // Add teacher-specific fields
+      if (designation) updateData.designation = designation;
+      if (department) updateData.department = department;
+    }
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Update the user
+    let updatedUser = null;
+    if (userType === "student") {
+      updatedUser = await Student.findOneAndUpdate(
+        { email: currentEmail },
+        updateData,
+        { new: true }
+      ).select('-password');
+    } else {
+      updatedUser = await Teacher.findOneAndUpdate(
+        { email: currentEmail },
+        updateData,
+        { new: true }
+      ).select('-password');
+    }
+    
+    // Add userType to response
+    const userWithType = {
+      ...updatedUser.toObject(),
+      userType: userType
+    };
+    
+    res.status(200).json({ 
+      message: "Profile updated successfully",
+      user: userWithType 
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Server error" });
   }
 }
 
@@ -144,6 +248,8 @@ const UserController = {
   ForgotPassword,
   EditUserDetails,
   SendMail,
+  GetProfile,
+  UpdateProfile,
 };
 
 export default UserController;

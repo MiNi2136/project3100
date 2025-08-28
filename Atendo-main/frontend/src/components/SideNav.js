@@ -52,6 +52,10 @@ const SideNav = ({ onCreateSession, userType = "student" }) => {
     }
   };
 
+  const handleSettings = () => {
+    navigate("/settings");
+  };
+
   return (
     <div className="sidenav">
       <div className="sidenav-content">
@@ -100,7 +104,10 @@ const SideNav = ({ onCreateSession, userType = "student" }) => {
             </button>
           )}
 
-          <button className="nav-item">
+          <button 
+            onClick={handleSettings}
+            className={`nav-item ${isActive("/settings") ? "active" : ""}`}
+          >
             <span>⚙️</span>
             <span>Settings</span>
           </button>

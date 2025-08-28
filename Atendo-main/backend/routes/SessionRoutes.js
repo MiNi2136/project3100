@@ -17,8 +17,8 @@ router.post("/getQR", JWT.verifyTokenFromBody, SessionController.GetQR);
 //attend session
 router.post(
   "/attend_session",
-  JWT.verifyTokenFromBody,
   upload.single("image"),
+  JWT.verifyTokenFromMultipart,
   SessionController.AttendSession
 );
 //get student sessions
