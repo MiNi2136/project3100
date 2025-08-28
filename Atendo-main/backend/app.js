@@ -48,7 +48,7 @@ app.use("/users", userRoutes);
 app.use("/sessions", SessionRoutes);
 
 // Start the server
-app.listen(PORT,"localhost" ,() => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
 // Clean file
