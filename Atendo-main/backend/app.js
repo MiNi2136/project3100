@@ -18,10 +18,10 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://localhost:3000",
-      "http://192.168.0.101:3000",
-      "https://192.168.0.101:3000",
-      "http://192.168.0.101:3000",
-      "https://192.168.0.101:3000",
+  "http://localhost:3000",
+  "https://localhost:3000",
+  "http://localhost:3000",
+  "https://localhost:3000",
       /^https?:\/\/192\.168\.0\.\d+:3000$/ // Allow any device on local network (HTTP and HTTPS)
     ],
     credentials: true,
@@ -48,7 +48,7 @@ app.use("/users", userRoutes);
 app.use("/sessions", SessionRoutes);
 
 // Start the server
-app.listen(PORT,"0.0.0.0" ,() => {
+app.listen(PORT,"localhost" ,() => {
   console.log(`Server is running on port ${PORT}`);
 });
 // Clean file
