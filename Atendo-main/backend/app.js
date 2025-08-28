@@ -15,7 +15,15 @@ const MONGODB_URI = process.env.MONGODB_URI;
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow your frontend origin
+    origin: [
+      "http://localhost:3000",
+      "https://localhost:3000",
+      "http://192.168.0.101:3000",
+      "https://192.168.0.101:3000",
+      "http://192.168.0.101:3000",
+      "https://192.168.0.101:3000",
+      /^https?:\/\/192\.168\.0\.\d+:3000$/ // Allow any device on local network (HTTP and HTTPS)
+    ],
     credentials: true,
   })
 );
@@ -40,6 +48,7 @@ app.use("/users", userRoutes);
 app.use("/sessions", SessionRoutes);
 
 // Start the server
-app.listen(PORT, '127.0.0.1', () => {
+app.listen(PORT,"0.0.0.0" ,() => {
   console.log(`Server is running on port ${PORT}`);
 });
+// Clean file

@@ -1,6 +1,7 @@
 //create a new session component
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import QRCode from "qrcode.react";
 import "../styles/NewSession.css";
 
@@ -10,6 +11,44 @@ const NewSession = ({ togglePopup, onSessionCreated }) => {
   const [qrtoggle, setQrtoggle] = useState(false);
   const [qrData, setQrData] = useState("");
   const [sessionDetails, setSessionDetails] = useState(null);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscapeKey = (e) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    // Focus the first input when modal opens
+    setTimeout(() => {
+      const firstInput = document.querySelector('.popup-inner input[name="name"]');
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }, 100);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
+
+  // Prevent body scrolling when modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  const handleClose = () => {
+    setQrtoggle(false);
+    setQrData("");
+    setSessionDetails(null);
+    togglePopup();
+  };
 
   const createQR = async (e) => {
     e.preventDefault();
@@ -62,7 +101,7 @@ const NewSession = ({ togglePopup, onSessionCreated }) => {
             };
             try {
               const response = await axios.post(
-                "http://localhost:5000/sessions/create",
+                `${API_BASE_URL}/sessions/create`,
                 formData
               );
               
@@ -82,6 +121,12 @@ const NewSession = ({ togglePopup, onSessionCreated }) => {
               }
             } catch (err) {
               console.error("Error creating session:", err);
+              if (err.response && err.response.status === 401) {
+                // Token expired or invalid, redirect to login
+                localStorage.clear();
+                window.location.href = "/login";
+                return;
+              }
               alert(`Error creating session: ${err.response?.data?.message || err.message}`);
               submitBtn.textContent = originalText;
               submitBtn.disabled = false;
@@ -113,16 +158,16 @@ const NewSession = ({ togglePopup, onSessionCreated }) => {
     alert("QR code URL copied to clipboard!");
   };
 
-  const handleClose = () => {
-    setQrtoggle(false);
-    setQrData("");
-    setSessionDetails(null);
-    togglePopup();
+  const handleOverlayClick = (e) => {
+    // Close modal when clicking on the overlay (not the content)
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
   };
 
   return (
-    <div className="new-popup">
-      <button onClick={handleClose} className="close-btn">
+    <div className="new-popup" onClick={handleOverlayClick}>
+      <button onClick={handleClose} className="close-btn" aria-label="Close modal">
         <strong>✕</strong>
       </button>
       {!qrtoggle && (

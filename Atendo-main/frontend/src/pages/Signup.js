@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/Signup.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import image512 from "../assets/logo512.png";
 import image192 from "../assets/logo192.png";
 import { SHA256 } from "crypto-js";
@@ -46,7 +47,7 @@ const Signup = () => {
           dob: date,
         };
         try {
-          await axios.post("http://localhost:5000/users/signup", formData);
+          await axios.post(`${API_BASE_URL}/users/signup`, formData);
           navigate("/login");
         } catch (err) {
           console.log(err);
@@ -81,7 +82,7 @@ const Signup = () => {
     }
 
     await axios
-      .post("http://localhost:5000/users/sendmail", {
+      .post(`${API_BASE_URL}/users/sendmail`, {
         email: email,
       })
       .then((res) => {

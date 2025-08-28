@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import QRCode from "qrcode.react";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +27,7 @@ const TeacherDashboard = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:5000/sessions/getSessions",
+        `${API_BASE_URL}/sessions/getSessions`,
         {
           token: token,
         }
@@ -34,6 +35,12 @@ const TeacherDashboard = () => {
       setSessionList(response.data.sessions || []);
     } catch (err) {
       console.error("Error fetching sessions:", err);
+      if (err.response && err.response.status === 401) {
+        // Token expired or invalid, redirect to login
+        localStorage.clear();
+        navigate("/login");
+        return;
+      }
       setSessionList([]);
     } finally {
       setLoading(false);

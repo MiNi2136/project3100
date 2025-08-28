@@ -37,12 +37,19 @@ const SideNav = ({ onCreateSession, userType = "student" }) => {
   };
 
   const handleReports = () => {
-    const reportsUrl = userType === "teacher" ? "/teacher-reports" : "/reports";
-    navigate(reportsUrl);
+    if (userType === "teacher") {
+      navigate("/teacher-data-reports");
+    } else {
+      navigate("/reports");
+    }
   };
 
-  const handleSessions = () => {
-    navigate("/sessions");
+  const handleAttendance = () => {
+    if (userType === "teacher") {
+      navigate("/teacher-reports");
+    } else {
+      navigate("/reports");
+    }
   };
 
   return (
@@ -76,20 +83,22 @@ const SideNav = ({ onCreateSession, userType = "student" }) => {
           )}
 
           <button 
-            onClick={handleSessions} 
-            className={`nav-item ${isActive("/sessions") ? "active" : ""}`}
-          >
-            <span>📊</span>
-            <span>Report</span>
-          </button>
-
-          <button 
-            onClick={handleReports} 
+            onClick={handleAttendance} 
             className={`nav-item ${isActive(userType === "teacher" ? "/teacher-reports" : "/reports") ? "active" : ""}`}
           >
-            <span>📈</span>
+            <span>📊</span>
             <span>Attendance</span>
           </button>
+
+          {userType === "teacher" && (
+            <button 
+              onClick={handleReports} 
+              className={`nav-item ${isActive("/teacher-data-reports") ? "active" : ""}`}
+            >
+              <span>📈</span>
+              <span>Reports</span>
+            </button>
+          )}
 
           <button className="nav-item">
             <span>⚙️</span>

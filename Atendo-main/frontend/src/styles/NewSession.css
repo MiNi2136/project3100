@@ -8,9 +8,12 @@
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  align-items: flex-start;
+  z-index: 999; /* Ensure it shows under navigation but above content */
   animation: fadeIn 0.3s ease-out;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -26,14 +29,33 @@
 .popup-inner {
   background: #fff;
   border-radius: 12px;
-  padding: 2rem;
+  padding: 2.5rem 2rem 2rem;
   max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
+  width: 100%;
+  max-height: calc(100vh - 4rem);
   overflow-y: auto;
   position: relative;
+  margin: 2rem auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease-out;
+  box-sizing: border-box;
+}
+
+/* QR Code Section - Similar responsive styling */
+.qr-code-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2.5rem 2rem 2rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  position: relative;
+  margin: 2rem auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 @keyframes slideIn {
@@ -50,26 +72,32 @@
 /* Close button */
 .close-btn {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 10px;
+  right: 10px;
   background: #e74c3c;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
   transition: all 0.3s ease;
   z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .close-btn:hover {
   background: #c0392b;
   transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.close-btn:active {
+  transform: scale(0.95);
 }
 
 /* Form styling */
@@ -122,6 +150,29 @@
 .create-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+}
+
+.create-btn:disabled {
+  background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.create-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Loading animation for button */
+@keyframes loading {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.create-btn:disabled {
+  animation: loading 1.5s infinite;
 }
 
 /* QR Code Display */
@@ -366,21 +417,133 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .popup-inner {
-    margin: 1rem;
-    padding: 1.5rem;
-    width: calc(100% - 2rem);
+  .new-popup {
+    padding: 1rem 0.5rem;
+    align-items: flex-start;
+  }
+
+  .popup-inner,
+  .qr-code-section {
+    margin: 1rem auto;
+    padding: 2rem 1.5rem 1.5rem;
+    width: calc(100% - 1rem);
+    max-width: none;
+    border-radius: 8px;
+    max-height: calc(100vh - 2rem);
   }
   
-  .popup-inner h5 {
+  .popup-inner h5,
+  .qr-header h5 {
     font-size: 1.25rem;
+    margin-bottom: 1rem;
   }
   
-  .new-popup > button {
-    top: 15px;
-    right: 15px;
+  .close-btn {
+    top: 8px;
+    right: 8px;
     width: 35px;
     height: 35px;
-    font-size: 18px;
+    font-size: 16px;
   }
+
+  .popup-inner input,
+  .popup-inner select {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .create-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* QR section responsive */
+  .qr-display {
+    margin: 1rem 0;
+  }
+
+  .qr-display canvas {
+    width: 200px !important;
+    height: 200px !important;
+  }
+
+  .qr-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .session-summary {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .new-popup {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .popup-inner,
+  .qr-code-section {
+    margin: 0.5rem auto;
+    padding: 1.5rem 1rem 1rem;
+    width: calc(100% - 0.5rem);
+    border-radius: 6px;
+    max-height: calc(100vh - 1rem);
+  }
+
+  .popup-inner h5,
+  .qr-header h5 {
+    font-size: 1.1rem;
+  }
+
+  .close-btn {
+    top: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .qr-display canvas {
+    width: 180px !important;
+    height: 180px !important;
+  }
+
+  .popup-inner input,
+  .popup-inner select {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .create-btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .qr-instruction {
+    font-size: 0.8rem;
+  }
+}
+
+/* Improved scrolling */
+.popup-inner::-webkit-scrollbar,
+.qr-code-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.popup-inner::-webkit-scrollbar-track,
+.qr-code-section::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.popup-inner::-webkit-scrollbar-thumb,
+.qr-code-section::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.popup-inner::-webkit-scrollbar-thumb:hover,
+.qr-code-section::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }

@@ -174,6 +174,46 @@ async function GetStudentSessions(req, res) {
   }
 }
 
+// Get detailed attendance reports for teacher
+async function GetTeacherAttendanceReports(req, res) {
+  let tokenData = req.user;
+  try {
+    const teacher = await Teacher.findOne({ email: tokenData.email });
+    
+    // Enhanced session data with student information
+    const enhancedSessions = await Promise.all(
+      teacher.sessions.map(async (session) => {
+        const attendanceWithStudentData = await Promise.all(
+          session.attendance.map(async (attendance) => {
+            const student = await Student.findOne({ email: attendance.student_email });
+            return {
+              ...attendance.toObject(),
+              student_name: student?.name || 'Unknown',
+              student_regno: attendance.regno || 'N/A',
+              student_email: attendance.student_email,
+              ct_marks: attendance.ct_marks || {},
+              status: parseFloat(attendance.distance) <= parseFloat(session.radius) ? 'Present' : 'Late',
+              attendance_time: new Date(attendance.date).toLocaleString(),
+            };
+          })
+        );
+
+        return {
+          ...session.toObject(),
+          attendance: attendanceWithStudentData,
+          total_students: attendanceWithStudentData.length,
+          present_count: attendanceWithStudentData.filter(a => a.status === 'Present').length,
+          late_count: attendanceWithStudentData.filter(a => a.status === 'Late').length,
+        };
+      })
+    );
+
+    res.status(200).json({ sessions: enhancedSessions });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
 //get current running sessions (sessions created today and still active)
 async function GetCurrentSessions(req, res) {
   try {
@@ -357,6 +397,52 @@ async function SaveCTMarks(req, res) {
   }
 }
 
+// Update CT marks for a specific student in a session
+async function UpdateCTMarks(req, res) {
+  let tokenData = req.user;
+  let { session_id, student_email, ct_marks } = req.body;
+
+  try {
+    const teacher = await Teacher.findOne({ email: tokenData.email });
+    
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    let updated = false;
+    
+    // Find the session and student to update CT marks
+    teacher.sessions.forEach(session => {
+      if (session.session_id === session_id) {
+        session.attendance.forEach(attendance => {
+          if (attendance.student_email === student_email) {
+            attendance.ct_marks = { ...attendance.ct_marks, ...ct_marks };
+            updated = true;
+          }
+        });
+      }
+    });
+
+    if (updated) {
+      await Teacher.findOneAndUpdate(
+        { email: tokenData.email },
+        { sessions: teacher.sessions }
+      );
+      
+      res.status(200).json({ 
+        message: "CT marks updated successfully"
+      });
+    } else {
+      res.status(404).json({ 
+        message: "Session or student not found"
+      });
+    }
+
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
 const SessionController = {
   CreateNewSession,
   GetAllTeacherSessions,
@@ -366,6 +452,8 @@ const SessionController = {
   GetCurrentSessions,
   GetPerformanceData,
   SaveCTMarks,
+  GetTeacherAttendanceReports,
+  UpdateCTMarks,
 };
 
 export default SessionController;

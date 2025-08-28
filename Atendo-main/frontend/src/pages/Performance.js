@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import SideNav from "../components/SideNav";
 import "../styles/Performance.css";
 
@@ -22,7 +23,7 @@ const Performance = () => {
   function getPerformanceData() {
     setLoading(true);
     axios
-      .post("http://localhost:5000/sessions/getPerformanceData", {
+      .post(`${API_BASE_URL}/sessions/getPerformanceData`, {
         token: token,
       })
       .then((response) => {
@@ -55,6 +56,12 @@ const Performance = () => {
       })
       .catch((err) => {
         console.log("Error fetching performance data:", err);
+        if (err.response && err.response.status === 401) {
+          // Token expired or invalid, redirect to login
+          localStorage.clear();
+          window.location.href = "/login";
+          return;
+        }
         setPerformanceData([]);
         setLoading(false);
       });
@@ -98,7 +105,7 @@ const Performance = () => {
         ct_marks: student.ctMarks
       }));
 
-      const response = await axios.post("http://localhost:5000/sessions/saveCTMarks", {
+      const response = await axios.post(`${API_BASE_URL}/sessions/saveCTMarks`, {
         token: token,
         ct_marks_data: ctMarksData
       });

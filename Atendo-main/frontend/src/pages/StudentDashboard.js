@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import "../styles/StudentDashboard.css";
 import { useNavigate } from "react-router-dom";
 import StudentForm from "./StudentForm";
@@ -15,11 +16,17 @@ const Dashboard = () => {
   const [isSessionDisplay, setSessionDisplay] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [currentSessions, setCurrentSessions] = useState([]);
+  const [showMobileNav, setShowMobileNav] = useState(false);
   const navigate = useNavigate();
+
+  function handleCurrentSessionScan(sessionData) {
+    // Direct scan for current running session
+    setShowQRScanner(true);
+  }
 
   function getStudentSessions() {
     axios
-      .post("http://localhost:5000/sessions/getStudentSessions", {
+      .post(`${API_BASE_URL}/sessions/getStudentSessions`, {
         token: token,
       })
       .then((response) => {
@@ -32,7 +39,7 @@ const Dashboard = () => {
 
   function getCurrentSessions() {
     axios
-      .post("http://localhost:5000/sessions/getCurrentSessions", {
+      .post(`${API_BASE_URL}/sessions/getCurrentSessions`, {
         token: token,
       })
       .then((response) => {
@@ -136,8 +143,43 @@ const Dashboard = () => {
 
   return (
     <>
+      {/* Mobile Navigation Header */}
+      <div className="mobile-header">
+        <div className="mobile-header-content">
+          <h1>👨‍🎓 Student Dashboard</h1>
+          <button 
+            className="mobile-nav-toggle"
+            onClick={() => setShowMobileNav(!showMobileNav)}
+          >
+            {showMobileNav ? '✕' : '☰'}
+          </button>
+        </div>
+        
+        {/* Mobile Navigation Dropdown */}
+        {showMobileNav && (
+          <div className="mobile-nav-dropdown">
+            <button onClick={() => { navigate("/student-dashboard"); setShowMobileNav(false); }}>
+              🏠 Dashboard
+            </button>
+            <button onClick={() => { navigate("/reports"); setShowMobileNav(false); }}>
+              📊 My Reports  
+            </button>
+            <button onClick={() => { setShowQRScanner(true); setShowMobileNav(false); }}>
+              📱 Scan QR Code
+            </button>
+            <button onClick={() => { navigate("/logout"); setShowMobileNav(false); }}>
+              🚪 Logout
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="app-container">
-        <SideNav userType="student" />
+        {/* Desktop Side Navigation - Hidden on mobile */}
+        <div className="desktop-nav">
+          <SideNav userType="student" />
+        </div>
+        
         <div className="main-content-area">
           <div className="dashboard-main">
           {!isSessionDisplay && (
@@ -166,9 +208,9 @@ const Dashboard = () => {
                       )}
                       <button 
                         className="scan-btn"
-                        onClick={() => setShowQRScanner(true)}
+                        onClick={handleCurrentSessionScan}
                       >
-                        📱 Scan QR Code
+                        📱 Scan & Join Session
                       </button>
                     </div>
                   </div>

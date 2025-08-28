@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import SideNav from "../components/SideNav";
 import "../styles/Reports.css";
 
@@ -17,7 +18,7 @@ const Reports = () => {
   function getStudentSessions() {
     setLoading(true);
     axios
-      .post("http://localhost:5000/sessions/getStudentSessions", {
+      .post(`${API_BASE_URL}/sessions/getStudentSessions`, {
         token: token,
       })
       .then((response) => {

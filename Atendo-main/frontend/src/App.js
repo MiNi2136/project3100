@@ -14,6 +14,7 @@ import {
 } from "./pages/Index";
 import Reports from "./pages/Reports";
 import TeacherReports from "./pages/TeacherReports";
+import TeacherDataSheetReports from "./pages/TeacherDataSheetReports";
 import Performance from "./pages/Performance";
 
 const router = createBrowserRouter([
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
       {
         path: "teacher-reports", 
         element: <TeacherReports />,
+      },
+      {
+        path: "teacher-data-reports",
+        element: <TeacherDataSheetReports />,
       },
       {
         path: "performance",

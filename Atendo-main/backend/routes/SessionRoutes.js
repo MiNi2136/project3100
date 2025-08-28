@@ -5,45 +5,57 @@ import SessionController from "../controllers/SessionController.js";
 import JWT from "../middleware/JWT.js";
 
 //login
-router.post("/create", JWT.verifyToken, SessionController.CreateNewSession);
+router.post("/create", JWT.verifyTokenFromBody, SessionController.CreateNewSession);
 //get sessions
 router.post(
   "/getSessions",
-  JWT.verifyToken,
+  JWT.verifyTokenFromBody,
   SessionController.GetAllTeacherSessions
 );
 //get QR
-router.post("/getQR", JWT.verifyToken, SessionController.GetQR);
+router.post("/getQR", JWT.verifyTokenFromBody, SessionController.GetQR);
 //attend session
 router.post(
   "/attend_session",
-  JWT.verifyToken,
+  JWT.verifyTokenFromBody,
   upload.single("image"),
   SessionController.AttendSession
 );
 //get student sessions
 router.post(
   "/getStudentSessions",
-  JWT.verifyToken,
+  JWT.verifyTokenFromBody,
   SessionController.GetStudentSessions
 );
 //get current running sessions
 router.post(
   "/getCurrentSessions",
-  JWT.verifyToken,
+  JWT.verifyTokenFromBody,
   SessionController.GetCurrentSessions
 );
 //get performance data
 router.post(
   "/getPerformanceData",
-  JWT.verifyToken,
+  JWT.verifyTokenFromBody,
   SessionController.GetPerformanceData
 );
 //save CT marks
 router.post(
   "/saveCTMarks",
-  JWT.verifyToken,
+  JWT.verifyTokenFromBody,
   SessionController.SaveCTMarks
+);
+//get detailed attendance reports
+router.post(
+  "/getAttendanceReports",
+  JWT.verifyTokenFromBody,
+  SessionController.GetTeacherAttendanceReports
+);
+//update CT marks
+router.post(
+  "/updateCTMarks",
+  JWT.verifyTokenFromBody,
+  SessionController.UpdateCTMarks
 );
 
 export default router;

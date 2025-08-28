@@ -1,3 +1,105 @@
+/* Mobile Navigation Header */
+.mobile-header {
+  display: none; /* Hidden by default on desktop */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+}
+
+.mobile-header h1 {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.mobile-nav-toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.mobile-nav-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-nav-dropdown button {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 15px 20px;
+  text-align: left;
+  font-size: 1em;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.mobile-nav-dropdown button:hover {
+  background: #f8f9fa;
+}
+
+.mobile-nav-dropdown button:last-child {
+  border-bottom: none;
+}
+
+/* Desktop Navigation */
+.desktop-nav {
+  display: block; /* Shown by default on desktop */
+}
+
+/* App Container Updates */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+.main-content-area {
+  flex: 1;
+  overflow-x: auto;
+}
+
 /* Student Dashboard Styles */
 .dashboard-main {
   padding: 20px;
@@ -480,6 +582,329 @@
 .distance-value.red {
   color: #dc3545;
   font-weight: 600;
+}
+
+/* QR Scanner Styles */
+.qr-scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.qr-scanner-popup {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.qr-scanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.qr-scanner-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2em;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #666;
+  padding: 5px;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.scanner-content {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.scanner-instructions {
+  text-align: center;
+}
+
+.scanner-instructions p {
+  margin: 10px 0;
+  color: #666;
+}
+
+.scanner-instructions .scan-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  margin: 15px 0;
+  width: 100%;
+  max-width: 250px;
+  transition: transform 0.2s;
+}
+
+.scanner-instructions .scan-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Show mobile header, hide desktop nav */
+  .mobile-header {
+    display: block !important;
+  }
+  
+  .desktop-nav {
+    display: none !important;
+  }
+  
+  /* Adjust main content for mobile header */
+  .main-content-area {
+    margin-top: 70px; /* Account for fixed mobile header */
+  }
+  
+  .dashboard-main {
+    padding: 15px;
+    margin-top: 0;
+  }
+  
+  /* Mobile-friendly current sessions */
+  .current-sessions {
+    margin: 15px 0;
+    padding: 20px 15px;
+  }
+  
+  .current-sessions h2 {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+  }
+  
+  .current-sessions-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .current-session-card {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 15px;
+  }
+  
+  .session-info {
+    width: 100%;
+  }
+  
+  .session-info h3 {
+    font-size: 1.1em;
+    margin-bottom: 8px;
+  }
+  
+  .session-info p {
+    font-size: 0.9em;
+    margin: 4px 0;
+  }
+  
+  .qr-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .session-qr {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .scan-btn {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1em;
+    border-radius: 8px;
+  }
+  
+  /* Mobile scan section */
+  .scan-section {
+    margin: 20px 0;
+    padding: 25px 15px;
+  }
+  
+  .scan-qr-main-btn {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    margin: 15px 0;
+  }
+  
+  .scan-instruction {
+    font-size: 0.9em;
+    line-height: 1.4;
+  }
+  
+  /* Mobile attendance section */
+  .attendance-section {
+    margin: 20px 0;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+  
+  .section-header h2 {
+    font-size: 1.3em;
+  }
+  
+  .attendance-count {
+    font-size: 0.9em;
+  }
+  
+  .attendance-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .attendance-card {
+    padding: 15px;
+  }
+  
+  .card-header h3 {
+    font-size: 1em;
+  }
+  
+  .card-content {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .attendance-details {
+    width: 100%;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+  }
+  
+  .detail-item {
+    width: 100%;
+  }
+  
+  .attendance-photo-container {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .attendance-photo {
+    max-width: 200px;
+    max-height: 150px;
+  }
+  
+  /* No attendance mobile */
+  .no-attendance {
+    padding: 30px 15px;
+  }
+  
+  .no-attendance-icon {
+    font-size: 3em;
+  }
+  
+  .no-attendance h3 {
+    font-size: 1.2em;
+  }
+  
+  /* View all button mobile */
+  .view-all-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-header-content {
+    padding: 12px 15px;
+  }
+  
+  .mobile-header h1 {
+    font-size: 1.1em;
+  }
+  
+  .dashboard-main {
+    padding: 10px;
+  }
+  
+  .current-sessions {
+    padding: 15px 10px;
+    margin: 10px 0;
+  }
+  
+  .current-session-card {
+    padding: 12px;
+  }
+  
+  .scan-section {
+    padding: 20px 10px;
+  }
+  
+  .attendance-card {
+    padding: 12px;
+  }
+  
+  /* Mobile QR Scanner */
+  .qr-scanner-overlay {
+    padding: 15px;
+  }
+  
+  .qr-scanner-popup {
+    padding: 15px;
+    border-radius: 12px;
+    max-height: 85vh;
+  }
+  
+  .qr-scanner-header h3 {
+    font-size: 1.1em;
+  }
+  
+  .scanner-instructions .scan-btn {
+    padding: 15px 20px;
+    font-size: 1.1em;
+  }
 }
 
 .attendance-photo {

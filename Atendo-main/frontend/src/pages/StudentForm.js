@@ -1,6 +1,7 @@
 //create a new session component
 import React, { useState, useRef } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import "../styles/StudentForm.css";
 
 const StudentForm = ({ togglePopup }) => {
@@ -81,7 +82,7 @@ const StudentForm = ({ togglePopup }) => {
             try {
               console.log("sending data to server");
               const response = await axios.post(
-                "http://localhost:5000/sessions/attend_session",
+                `${API_BASE_URL}/sessions/attend_session`,
                 formData,
                 {
                   headers: {
