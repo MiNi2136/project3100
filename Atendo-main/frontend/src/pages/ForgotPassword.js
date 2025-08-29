@@ -6,6 +6,9 @@ import image512 from "../assets/logo512.png";
 import image192 from "../assets/logo192.png";
 import { SHA256 } from "crypto-js";
 
+// Set axios defaults
+axios.defaults.withCredentials = true;
+
 const ForgotPassword = () => {
   // eslint-disable-next-line
   const [showPassword, setShowPassword] = useState(false);
@@ -30,17 +33,18 @@ const ForgotPassword = () => {
     try {
       document.querySelector(".page1").style.display = "none";
       document.querySelector(".page2").style.display = "block";
-      await axios
-        .post(`${API_BASE_URL}/users/sendmail`, {
-          email: email,
-        })
-        .then((res) => {
-          setOtp(res.data.otp);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const response = await axios.post(
+        `${API_BASE_URL}/users/sendmail`,
+        { email: email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setOtp(response.data.otp);
     } catch (error) {
+      console.log(error);
       alert("Error sending OTP");
     }
   };
@@ -75,13 +79,19 @@ const ForgotPassword = () => {
           password,
         };
         try {
-          await axios.post(
+          const response = await axios.post(
             `${API_BASE_URL}/users/forgotpassword`,
-            formData
+            formData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
           );
           navigate("/login");
         } catch (err) {
           console.log(err);
+          alert("Error updating password");
         }
       } else {
         alert("Passwords do not match");

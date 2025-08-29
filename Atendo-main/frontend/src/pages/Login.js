@@ -47,7 +47,12 @@ const Login = () => {
       try {
         const response = await axios.post(
           `${API_BASE_URL}/users/signin`,
-          formData
+          formData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
         let user = response.data.user;
         let type = response.data.type;

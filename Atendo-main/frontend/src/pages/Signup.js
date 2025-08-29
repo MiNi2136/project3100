@@ -9,6 +9,9 @@ import { SHA256 } from "crypto-js";
 import see from "../assets/see.png";
 import hide from "../assets/hide.png";
 
+// Set axios defaults
+axios.defaults.withCredentials = true;
+
 const Signup = () => {
   // eslint-disable-next-line
   const [showPassword, setShowPassword] = useState(false);
@@ -47,10 +50,19 @@ const Signup = () => {
           dob: date,
         };
         try {
-          await axios.post(`${API_BASE_URL}/users/signup`, formData);
+          const response = await axios.post(
+            `${API_BASE_URL}/users/signup`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
           navigate("/login");
         } catch (err) {
           console.log(err);
+          alert("Error creating account");
         }
       } else {
         alert("Passwords do not match");
