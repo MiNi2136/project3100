@@ -43,6 +43,11 @@ mongoose
   })
   .catch((err) => console.log(err));
 
+// Root route for testing
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
+});
+
 // Routes
 app.use("/users", userRoutes);
 app.use("/sessions", SessionRoutes);
