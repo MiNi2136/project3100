@@ -18,11 +18,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://localhost:3000",
-  "http://localhost:3000",
-  "https://localhost:3000",
-  "http://localhost:3000",
-  "https://localhost:3000",
-      /^https?:\/\/192\.168\.0\.\d+:3000$/ // Allow any device on local network (HTTP and HTTPS)
+      "https://projectfrontend-eosin.vercel.app"
     ],
     credentials: true,
   })
